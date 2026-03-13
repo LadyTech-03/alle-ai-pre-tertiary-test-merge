@@ -40,9 +40,6 @@ interface OrganizationData {
   slug: string;
   logo: string;
   type: string;
-  totalSeats: number;
-  facultySeats: number;
-  studentSeats: number;
   nextBilling: string;
   supportEmail: string[];
   createdBy: string;
@@ -65,9 +62,9 @@ export default function OrganizationInfoTab() {
   // Calculate total seats from seats_info
   const totalSeats = organizationDetails?.seats_info
     ? Object.values(organizationDetails.seats_info).reduce(
-        (total, seatInfo) => total + parseInt(seatInfo.purchased_seats),
-        0
-      )
+      (total, seatInfo) => total + parseInt(seatInfo.purchased_seats),
+      0
+    )
     : 0;
 
   // Get faculty and student seats
@@ -107,14 +104,11 @@ export default function OrganizationInfoTab() {
     slug: organizationDetails?.slug || "",
     logo: organizationDetails?.logo_url || "",
     type: organizationDetails?.organisation_plan || "Organization",
-    totalSeats: totalSeats,
-    facultySeats: facultySeats,
-    studentSeats: studentSeats,
     nextBilling: organizationDetails?.subscription_info
       ? `${organizationDetails.subscription_info.cycle}`
       : organizationDetails?.trial_ends_at
-      ? new Date(organizationDetails.trial_ends_at).toLocaleDateString()
-      : "No billing info",
+        ? new Date(organizationDetails.trial_ends_at).toLocaleDateString()
+        : "No billing info",
     supportEmail: parseContactField(
       organizationDetails?.support_email || organizationDetails?.email
     ),
@@ -335,7 +329,7 @@ export default function OrganizationInfoTab() {
                     <a
                       href={
                         orgData.websiteUrl.startsWith("http://") ||
-                        orgData.websiteUrl.startsWith("https://")
+                          orgData.websiteUrl.startsWith("https://")
                           ? orgData.websiteUrl
                           : `https://${orgData.websiteUrl}`
                       }
@@ -401,31 +395,32 @@ export default function OrganizationInfoTab() {
           </div>
           <h2 className="text-base font-semibold">Subscription Details</h2>
         </div>
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="rounded p-3 shadow-sm border dark:border-gray-700 border-gray-200">
+        <div className="flex flex-wrap gap-3 mb-4">
+          <div className="flex-1 min-w-[140px] rounded p-3 shadow-sm border dark:border-gray-700 border-gray-200">
             <p className="text-xs font-medium uppercase tracking-wide mb-1">
               Total Seats
             </p>
             <p className="text-xl font-bold text-muted-foreground">
-              {orgData.totalSeats}
+              {totalSeats}
             </p>
           </div>
-          <div className="dark:border-gray-700 rounded p-3 shadow-sm border border-gray-200">
-            <p className="text-xs font-medium uppercase tracking-wide mb-1">
-              Faculty
-            </p>
-            <p className="text-xl font-bold text-muted-foreground">
-              {orgData.facultySeats}
-            </p>
-          </div>
-          <div className="dark:border-gray-700 rounded p-3 shadow-sm border border-gray-200">
-            <p className="text-xs font-medium uppercase tracking-wide mb-1">
-              Students
-            </p>
-            <p className="text-xl font-bold text-muted-foreground">
-              {orgData.studentSeats}
-            </p>
-          </div>
+          {Object.entries(organizationDetails?.seats_info || {}).map(
+            ([key, info]) => (
+              <div
+                key={key}
+                className="flex-1 min-w-[140px] dark:border-gray-700 rounded p-3 shadow-sm border border-gray-200"
+              >
+                <p className="text-xs font-medium uppercase tracking-wide mb-1">
+                  {key === "device_edu"
+                    ? "Devices"
+                    : key.charAt(0).toUpperCase() + key.slice(1)}
+                </p>
+                <p className="text-xl font-bold text-muted-foreground">
+                  {info.purchased_seats}
+                </p>
+              </div>
+            )
+          )}
         </div>
         <div className="flex items-center gap-2 dark:border-gray-700 rounded p-2 shadow-sm border border-gray-200">
           <Calendar className="w-3.5 h-3.5 text-blue-600" />
@@ -433,10 +428,10 @@ export default function OrganizationInfoTab() {
           <span className="text-xs font-semibold">
             {nextBillingDate
               ? new Intl.DateTimeFormat("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                }).format(new Date(nextBillingDate.replace(" ", "T")))
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }).format(new Date(nextBillingDate.replace(" ", "T")))
               : "Not available"}
           </span>
         </div>
