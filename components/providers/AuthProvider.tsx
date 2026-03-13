@@ -306,7 +306,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (response.data.to === "edu_device_chat") {
             const orgId = response.data.organisationDetails?.id;
             const exchangeCode = response.data.exchange_code;
-            const redirectUrl = `http://localhost:3001/auth?org_id=${orgId}&aiptotp=${exchangeCode}`;
+            // @ts-ignore
+            const redirectUrl = `${process.env.NEXT_PUBLIC_EDU_URL}/auth?org_id=${orgId}&aiptotp=${exchangeCode}`;
             window.location.href = redirectUrl;
             return;
           }
